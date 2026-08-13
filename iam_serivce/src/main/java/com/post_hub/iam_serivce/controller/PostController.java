@@ -1,9 +1,9 @@
 package com.post_hub.iam_serivce.controller;
 
-import com.post_hub.iam_serivce.constants.ApiErrorMessage;
 import com.post_hub.iam_serivce.constants.ApiLogMessage;
-import com.post_hub.iam_serivce.entity.PostEntity;
-import com.post_hub.iam_serivce.repository.PostRepository;
+import com.post_hub.iam_serivce.dto.post.PostDTO;
+import com.post_hub.iam_serivce.response.IamResponse;
+import com.post_hub.iam_serivce.service.PostSerivce;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/posts")
 @Slf4j
 public class PostController {
-    private final PostRepository postRepository;
+    private final PostSerivce postSerivce;
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<PostEntity> getPostById(@PathVariable Long id) {
+    public ResponseEntity<IamResponse<PostDTO>> getPostById(@PathVariable Long id) {
         log.info(ApiLogMessage.POST_INFO_BY_ID.getMessage(id));
-        return postRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> {
-                    log.info(ApiErrorMessage.POST_NOT_FOUND_BY_ID.getMessage(id));
-                    return ResponseEntity.notFound().build();
-                });
+        IamResponse<PostDTO> iamResponse = postSerivce.getById(id);
+        return ResponseEntity.ok(iamResponse);
     }
 }
